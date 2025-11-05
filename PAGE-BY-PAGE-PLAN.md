@@ -40,9 +40,10 @@ Priority | Page Name          | Status      | Time Estimate | Complexity
 - **User feedback:** "Ne izgleda dobro" (Doesn't look good)
 
 ### Requirements
-1. **4 Widgets Grid Layout**
+1. **5 Widgets Grid Layout**
    - Active Service Requests (top-left)
    - Guest Status Overview (top-right)
+   - Device Monitor (center) **NEW - User requested**
    - Crew Activity (bottom-left)
    - Recent Activity Log (bottom-right)
 
@@ -60,6 +61,29 @@ Priority | Page Name          | Status      | Time Estimate | Complexity
    - Yacht Luxury (gold/premium)
    - Dark (pure dark)
 
+5. **Device Monitor Widget Details** (**NEW - User Requested**)
+   - **Purpose:** Monitor all hardware devices in the OBEDIO system
+   - **Device Types:**
+     - ESP32 Smart Buttons (button presses, battery level, signal strength)
+     - Wear OS Watches (TicWatch - online status, battery, last seen)
+     - Apple Watches (online status, battery, last seen)
+     - Tablets/Dashboards (connection status)
+   - **Information Displayed:**
+     - Device name/ID
+     - Device type (icon)
+     - Status: Online (green), Offline (red), Low Battery (orange)
+     - Battery level (%)
+     - Last seen timestamp
+     - Signal strength (RSSI for MQTT devices)
+   - **Actions:**
+     - Click device → Show device details
+     - Filter by device type
+     - Sort by status, battery, last seen
+   - **Real-time Updates:**
+     - Device connects/disconnects → Update status instantly
+     - Battery level changes → Update in real-time
+     - MQTT heartbeat monitoring
+
 ### Components to Create
 
 ```
@@ -68,6 +92,7 @@ src/components/dashboard/
 ├── widgets/
 │   ├── ServiceRequestsWidget.tsx    # Active requests widget
 │   ├── GuestStatusWidget.tsx        # Guest overview widget
+│   ├── DeviceMonitorWidget.tsx      # Device monitor widget (ESP32, watches, etc.)
 │   ├── CrewActivityWidget.tsx       # Crew activity widget
 │   └── ActivityLogWidget.tsx        # Recent activity widget
 ├── hooks/
@@ -85,6 +110,7 @@ const dashboardApi = {
   getStats: () => fetch('/api/dashboard/stats'),           // Overall stats
   getActiveRequests: () => fetch('/api/service-requests?status=pending,serving'),
   getGuestStatus: () => fetch('/api/guests?status=active'),
+  getDevices: () => fetch('/api/devices'),                 // All devices (ESP32, watches, tablets)
   getCrewActivity: () => fetch('/api/crew/activity?limit=10'),
   getRecentActivity: () => fetch('/api/activity-log?limit=20')
 };
@@ -175,14 +201,15 @@ const dashboardApi = {
 ### Acceptance Criteria
 
 ✅ **Layout:**
-- [ ] 2x2 grid on desktop
-- [ ] 1x4 stack on mobile
+- [ ] 5-widget grid layout on desktop (e.g., 2 columns top, 3 columns bottom, or 3x2 grid)
+- [ ] 1x5 stack on mobile
 - [ ] Smooth transitions between breakpoints
 
 ✅ **Widgets:**
-- [ ] All 4 widgets render correctly
+- [ ] All 5 widgets render correctly (Service Requests, Guests, Device Monitor, Crew, Activity)
 - [ ] Data displays properly (even placeholder data)
 - [ ] Widgets are clickable and navigate to detail pages
+- [ ] Device Monitor widget shows device status (online/offline/battery)
 
 ✅ **Responsive:**
 - [ ] Small resize: Content scales smoothly
